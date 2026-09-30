@@ -2,40 +2,41 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 
-# Učitavanje stranice
+# Target URL
 url = "http://books.toscrape.com/"
 response = requests.get(url)
 soup = BeautifulSoup(response.text, "html.parser")
 
-# Unos budžeta od strane korisnika
-max_budget = float(input("Unesite vaš maksimalni budžet (GBP): "))
+# Get maximum budget from user input
+max_budget = float(input("Enter your maximum budget (GBP): "))
 
 books_data = []
 
-# Pronalaženje svih knjiga na stranici
+# Find all book items on the page
 books = soup.find_all("article", class_="product_pod")
 
-print("\n--- Pronađene knjige u okviru budžeta ---")
+print("\n--- Books Found Within Budget ---")
 
 for book in books:
     title = book.h3.a["title"]
 
-    # Izvlačenje cene, čišćenje teksta i konverzija u float
+    # Extract price, clean currency symbols, and convert to float
     price_text = book.find("p", class_="price_color").text
     clean_price = price_text.replace("£", "").replace("Â", "").strip()
     price = float(clean_price)
 
-    # Provera da li je cena u okviru budžeta
+    # Filter books within budget
     if price <= max_budget:
         print(f"📖 {title} - £{price}")
         books_data.append([title, price])
 
-# Čuvanje podataka u CSV fajl prilagođen za Excel (sa ';' separatorom)
+# Save filtered results to CSV file optimized for Excel
 csv_filename = "books.csv"
 
 with open(csv_filename, mode="w", newline="", encoding="utf-8-sig") as file:
+    file.write("sep=;\n")
     writer = csv.writer(file, delimiter=";")
-    writer.writerow(["Naslov knjige", "Cena (GBP)"])
+    writer.writerow(["Book Title", "Price (GBP)"])
     writer.writerows(books_data)
 
-print(f"\n✅ Podaci su uspešno sačuvani u '{csv_filename}'!")
+print(f"\n✅ Data successfully saved to '{csv_filename}'!")
