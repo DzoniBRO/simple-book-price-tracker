@@ -1,0 +1,16 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# PyCharm / IDE settings
+.idea/
+.vscode/
+
+# Output log files
+*.log
